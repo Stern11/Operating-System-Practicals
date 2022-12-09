@@ -1,0 +1,162 @@
+#include <iostream>
+using namespace std;
+
+
+// Acts as a room for each process
+class initProcess{
+
+public:
+    int processNum;
+    int burstTime;
+    int arrivalTime;
+    int turnaroundTime;
+    int waitTime;
+    int remainBurstTime=burstTime;
+    bool complete;
+    
+    initProcess()
+    {
+        processNum = 0;
+        burstTime = 0;
+        arrivalTime = 0;
+        turnaroundTime=0;
+        waitTime=0;
+        remainBurstTime=burstTime;
+    }
+
+    initProcess(int num, int burstTime, int arrivalTime)
+    {
+        this->processNum = num;
+        this->burstTime = burstTime;
+        this->arrivalTime = arrivalTime;
+        complete=false;
+        this->remainBurstTime=this->burstTime;
+    }
+    
+};
+
+
+class SRTF {
+    private:
+// Sort the process on basis on arrival time/burst time.
+// Auxillary methods
+        void sort(initProcess *P ,string A,int len){    
+            for(int i=0 ; i<len-1; i++){
+                for(int j=i ; j<len ; j++){
+                    if(A=="Arrival Time"){
+                        if(P[i].arrivalTime>P[j].arrivalTime){
+                            swap(&P[i] , &P[j]);
+                        }
+                    }
+                    else if(A=="RemainBurstTime"){
+                       if(P[i].remainBurstTime>P[j].remainBurstTime){
+                            swap(&P[i] , &P[j]);
+                        } 
+                    }
+                }
+            }    
+        }
+
+        void swap(initProcess *a , initProcess *b){
+            initProcess temp=*a;
+            *a=*b;
+            *b=temp;
+        }
+
+    public:
+        initProcess *P;
+        int n ;
+
+        SRTF(initProcess* A , int n){
+            P=new initProcess[n];
+            this->n=n;
+            for(int i=0 ; i<n ; i++){
+                P[i]=A[i];
+            }
+
+            for(int i=0 ; i<n ; i++){
+                P[i].remainBurstTime=P[i].burstTime;
+            }
+            printGanttChart();
+        }
+
+        void printGanttChart(){
+            sort(P,"Arrival Time", n);
+            initProcess *temp;
+            bool allFlag=true;
+            int flagCount=0;
+
+            int count=P[0].arrivalTime;
+            
+            cout << "P" << P[0].processNum << " | ";
+            count+=P[1].arrivalTime;
+            P[0].remainBurstTime=P[0].remainBurstTime-P[1].arrivalTime;
+            
+            while(allFlag){
+                int tempLen=0;
+                int k=0;
+
+                while(count>=P[k].arrivalTime and k<n and !P[k].complete){
+                    tempLen++;
+                    k++;
+                }
+                temp=new initProcess[tempLen];
+                int j=0;
+
+                for(int l=0 ; l<n ; l++){
+                    if(count>=P[l].arrivalTime and !P[l].complete){
+                        temp[j]=P[l];
+                        j++;
+                    }
+                }
+
+                sort(temp,"RemainBurstTime", tempLen);
+                cout << "P" << temp[0].processNum << " | ";
+                count=count+1;
+
+            // Flag check if a process is completed or not
+                for(int i=0 ; i<n ; i++){
+                    if(temp[0].processNum==P[i].processNum){
+                        P[i].remainBurstTime=P[i].remainBurstTime-1;
+                        if(P[i].remainBurstTime<=0){
+                            P[i].complete=true;
+                            flagCount++;
+                        }
+                    }
+                }
+            // Check if all process are complete
+ 
+                if(flagCount==n){
+                    allFlag=false;
+                }
+                
+                temp=NULL;
+            }
+
+        } 
+
+    };
+
+int main(){
+    int n;
+    int arrivalTime;
+    int burstTime;
+    initProcess *Process;
+    cout << "Enter the number of processes : ";
+    cin >> n;
+    Process = new initProcess[n];
+    // Inputs
+    for (int i = 0; i < n; i++){
+        Process[i].processNum = i;
+        cout << "Enter the arrival time of the process P" << i << " : ";
+        cin >> arrivalTime;
+        Process[i].arrivalTime = arrivalTime;
+        cout << "Enter the burst time of the process P" << i << " : ";
+        cin >> burstTime;
+        Process[i].burstTime = burstTime;
+        cout << endl;
+    }
+SRTF obj(Process, n);
+
+    return 0;
+}

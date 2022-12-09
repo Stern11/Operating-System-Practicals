@@ -1,0 +1,11 @@
+Hey, This is Aryan Pratap.
+This program would copy content of this file to "file2.txt".
+
+When this program would start to execute it would transform into a 
+process.
+
+Interrupts : Interrupts are the process which have the highest priority 
+    to execute. When an interrupt is generated it stops the currently
+running process and start to execute.
+After handling this interrupt previous process can continue to 
+execute.
