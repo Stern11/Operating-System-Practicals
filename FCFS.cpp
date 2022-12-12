@@ -35,8 +35,7 @@ class FCFS {
                         swap(&P[i] , &P[j]);
                     }
                 }
-            }
-            
+            }            
         }
 
         void swap(initProcess *a , initProcess *b){
